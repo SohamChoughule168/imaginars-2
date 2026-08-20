@@ -31,6 +31,8 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
+    console.error('Contact form error:', error);
+    
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { success: false, errors: error.flatten().fieldErrors },
@@ -38,9 +40,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error('Contact form error:', error);
+    // Return more detailed error for debugging
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { success: false, message: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
