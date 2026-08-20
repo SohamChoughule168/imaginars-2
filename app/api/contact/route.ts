@@ -30,7 +30,6 @@ export async function POST(request: NextRequest) {
     const validatedData = contactSchema.parse(body);
 
     console.log('API: Contact form submission:', validatedData);
-    // Removed setTimeout for testing
 
     return NextResponse.json(
       { success: true, message: 'Message sent successfully' },
@@ -51,4 +50,8 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function GET() {
+  return NextResponse.json({ status: 'ok', message: 'API is working' });
 }
