@@ -14,11 +14,12 @@ export async function POST(request: NextRequest) {
   try {
     const contentType = request.headers.get('content-type');
     console.log('API: Content-Type:', contentType);
-    console.log('API: Method:', request.method);
+    console.log('API: All headers:', Object.fromEntries(request.headers.entries()));
     
     const rawText = await request.text();
+    console.log('API: Raw text:', JSON.stringify(rawText));
     console.log('API: Raw text length:', rawText.length);
-    console.log('API: Raw text preview:', rawText.substring(0, 200));
+    console.log('API: Raw text bytes:', Array.from(rawText).map(c => c.charCodeAt(0)));
     
     let body: any;
     try {
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
     } catch (parseError) {
       console.error('API: JSON.parse error:', parseError);
       return NextResponse.json(
-        { success: false, message: 'Invalid JSON', details: parseError instanceof Error ? parseError.message : 'Parse failed' },
+        { success: false, message: 'Invalid JSON', details: parseError instanceof Error ? parseError.message : 'Parse failed', rawText },
         { status: 400 }
       );
     }
