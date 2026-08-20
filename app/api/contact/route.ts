@@ -12,21 +12,9 @@ const contactSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const rawText = await request.text();
-    console.log('API: Raw text:', rawText);
-    
-    let body: any;
-    try {
-      body = JSON.parse(rawText);
-    } catch (parseError) {
-      console.error('API: JSON.parse error:', parseError);
-      return NextResponse.json(
-        { success: false, message: 'Invalid JSON', details: parseError instanceof Error ? parseError.message : 'Parse failed' },
-        { status: 400 }
-      );
-    }
-    
+    const body = await request.json();
     console.log('API: Parsed body:', body);
+    
     const validatedData = contactSchema.parse(body);
 
     console.log('API: Contact form submission:', validatedData);
