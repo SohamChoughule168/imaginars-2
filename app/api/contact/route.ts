@@ -15,17 +15,16 @@ export async function POST(request: NextRequest) {
     const contentType = request.headers.get('content-type');
     console.log('Content-Type:', contentType);
     
-    const rawText = await request.text();
-    console.log('Raw body:', rawText);
-    console.log('Body length:', rawText.length);
-    
+    // Try request.json() directly
     let body: any;
     try {
-      body = JSON.parse(rawText);
-    } catch (parseError) {
-      console.error('JSON parse error:', parseError);
+      body = await request.json();
+    } catch (jsonError) {
+      console.error('request.json() error:', jsonError);
+      const rawText = await request.text();
+      console.log('Raw text fallback:', rawText);
       return NextResponse.json(
-        { success: false, message: 'Invalid JSON', details: parseError instanceof Error ? parseError.message : 'Parse failed' },
+        { success: false, message: 'Invalid JSON', details: jsonError instanceof Error ? jsonError.message : 'Parse failed' },
         { status: 400 }
       );
     }
