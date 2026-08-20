@@ -15,20 +15,19 @@ export async function POST(request: NextRequest) {
     const contentType = request.headers.get('content-type');
     console.log('API: Content-Type:', contentType);
     console.log('API: Method:', request.method);
-    console.log('API: URL:', request.url);
     
-    // Check if body is already read
-    const bodyUsed = (request as any).bodyUsed;
-    console.log('API: bodyUsed before json():', bodyUsed);
+    const rawText = await request.text();
+    console.log('API: Raw text length:', rawText.length);
+    console.log('API: Raw text preview:', rawText.substring(0, 200));
     
     let body: any;
     try {
-      body = await request.json();
-      console.log('API: request.json() succeeded');
-    } catch (jsonError) {
-      console.error('API: request.json() error:', jsonError);
+      body = JSON.parse(rawText);
+      console.log('API: JSON.parse succeeded');
+    } catch (parseError) {
+      console.error('API: JSON.parse error:', parseError);
       return NextResponse.json(
-        { success: false, message: 'Invalid JSON', details: jsonError instanceof Error ? jsonError.message : 'Parse failed' },
+        { success: false, message: 'Invalid JSON', details: parseError instanceof Error ? parseError.message : 'Parse failed' },
         { status: 400 }
       );
     }
