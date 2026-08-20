@@ -12,23 +12,16 @@ const contactSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const contentType = request.headers.get('content-type');
-    console.log('API: Content-Type:', contentType);
-    console.log('API: All headers:', Object.fromEntries(request.headers.entries()));
-    
     const rawText = await request.text();
-    console.log('API: Raw text:', JSON.stringify(rawText));
-    console.log('API: Raw text length:', rawText.length);
-    console.log('API: Raw text bytes:', Array.from(rawText).map(c => c.charCodeAt(0)));
+    console.log('API: Raw text:', rawText);
     
     let body: any;
     try {
       body = JSON.parse(rawText);
-      console.log('API: JSON.parse succeeded');
     } catch (parseError) {
       console.error('API: JSON.parse error:', parseError);
       return NextResponse.json(
-        { success: false, message: 'Invalid JSON', details: parseError instanceof Error ? parseError.message : 'Parse failed', rawText },
+        { success: false, message: 'Invalid JSON', details: parseError instanceof Error ? parseError.message : 'Parse failed' },
         { status: 400 }
       );
     }
@@ -37,7 +30,7 @@ export async function POST(request: NextRequest) {
     const validatedData = contactSchema.parse(body);
 
     console.log('API: Contact form submission:', validatedData);
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Removed setTimeout for testing
 
     return NextResponse.json(
       { success: true, message: 'Message sent successfully' },
