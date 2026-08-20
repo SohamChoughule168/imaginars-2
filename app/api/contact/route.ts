@@ -13,26 +13,30 @@ const contactSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const contentType = request.headers.get('content-type');
-    console.log('Content-Type:', contentType);
+    console.log('API: Content-Type:', contentType);
+    console.log('API: Method:', request.method);
+    console.log('API: URL:', request.url);
     
-    // Try request.json() directly
+    // Check if body is already read
+    const bodyUsed = (request as any).bodyUsed;
+    console.log('API: bodyUsed before json():', bodyUsed);
+    
     let body: any;
     try {
       body = await request.json();
+      console.log('API: request.json() succeeded');
     } catch (jsonError) {
-      console.error('request.json() error:', jsonError);
-      const rawText = await request.text();
-      console.log('Raw text fallback:', rawText);
+      console.error('API: request.json() error:', jsonError);
       return NextResponse.json(
         { success: false, message: 'Invalid JSON', details: jsonError instanceof Error ? jsonError.message : 'Parse failed' },
         { status: 400 }
       );
     }
     
-    console.log('Parsed body:', body);
+    console.log('API: Parsed body:', body);
     const validatedData = contactSchema.parse(body);
 
-    console.log('Contact form submission:', validatedData);
+    console.log('API: Contact form submission:', validatedData);
     await new Promise(resolve => setTimeout(resolve, 500));
 
     return NextResponse.json(
@@ -40,7 +44,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Contact form error:', error);
+    console.error('API: Contact form error:', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
